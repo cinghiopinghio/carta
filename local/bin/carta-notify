@@ -1,13 +1,9 @@
 #!/usr/bin/env bash
 
-case $# in
-  0)
+case $@ in
+  "")
     SEARCH='tag:new'
     TITLE='New MAIL'
-    ;;
-  1)
-    SEARCH='tag:'$1
-    TITLE="MAIL ($1)"
     ;;
   *)
     SEARCH=$@
