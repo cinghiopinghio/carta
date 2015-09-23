@@ -1,11 +1,15 @@
-#!/usr/bin/env bash
+#!/bin/sh
 
-# export GPG environment variables
-envfile="$HOME/.gnupg/gpg-agent.env"
-if [[ -e "$envfile" ]] && kill -0 $(grep GPG_AGENT_INFO "$envfile" | cut -d: -f 2) 2>/dev/null; then
-    eval "$(cat "$envfile")"
-else
-    eval "$(gpg-agent --daemon --enable-ssh-support --write-env-file "$envfile")"
+#STATE=`nmcli networking connectivity`
+STATE=`LC_ALL=en_US.UTF-8 wicd-cli -i | grep "Connection status" |\
+    sed -E 's/^.*:[ \t]*//'`
+
+if [ $STATE = 'Connected' ]
+then
+    mbsync -qq -a
+    notmuch new --quiet
+    exit 0
 fi
-export GPG_AGENT_INFO  # the env file does not contain the export statement
-export SSH_AUTH_SOCK   # enable gpg-agent for ssh
+echo "No internet connection."
+exit 0
+

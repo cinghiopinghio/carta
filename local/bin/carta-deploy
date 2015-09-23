@@ -1,16 +1,25 @@
 #!/usr/bin/env bash
 
+
+if [ "$#" -ne 1 ];
+then
+  echo "Usage: carta-deploy accountname"
+  exit
+fi
+
+# get account name
 ACCOUNT=$1
 
+# get account data
 PASS=$(pass email/${ACCOUNT})
 USER=$(echo "$PASS" | sed '1d' | grep -w "^[Uu]ser" | \
   sed -e "s/^[Uu]ser[ \t]*:[ \t]*//" -e "s/[ \t]*$//")
 FROM=$(echo "$PASS" | sed '1d' | grep -w "^[Ff]rom" | \
   sed -e "s/^[Ff]rom[ \t]*:[ \t]*//" -e "s/[ \t]*$//")
 
-
+# define command line
 MSMTP_CMD="msmtp"
 MSMTP_OPTS=" -a ${ACCOUNT} --user ${USER} --from ${FROM} -t "
 
-#echo $MSMTP_CMD $MSMTP_OPTS
+# send pipe stdin to smtp
 cat /dev/stdin | ${MSMTP_CMD} ${MSMTP_OPTS}

@@ -17,6 +17,10 @@ case $1 in
     shift
     echo carta-fetch $@
     ;;
+  n|notify)
+    shift
+    ./carta-notify $@
+    ;;
   *)
     echo unknown option
     ;;
