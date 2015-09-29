@@ -1,0 +1,28 @@
+#!/bin/bash
+
+case $1 in
+  d|deploy)
+    shift
+    carta-deploy $@
+    ;;
+  e|empty-basket)
+    echo empty
+    ;;
+  f|fetch)
+    carta-fetch
+    ;;
+  n|notify)
+    shift
+    carta-notify $@
+    ;;
+  *)
+    echo unknown option
+    echo "Usage:"
+    echo "    carta {deploy,empty-basket,fetch,notify} [ARGS]"
+    echo ""
+    echo "carta {d,deploy} ACCOUNT:        send you messages from stdin with account"
+    echo "carta {e,empty-basket}:          empty your basket"
+    echo "carta {f,fetch}:                 fetch new mails"
+    echo "carta {n,notify} [SEARCH_TERMS]: send notification of mails"
+    ;;
+esac
