@@ -1,15 +1,19 @@
 #!/bin/sh
 
-#STATE=`nmcli networking connectivity`
-STATE=`LC_ALL=en_US.UTF-8 wicd-cli -i | grep "Connection status" |\
-    sed -E 's/^.*:[ \t]*//'`
 
-if [ $STATE = 'Connected' ]
+# Check if connected
+is_connected
+STATE=$?
+
+if [ $STATE -eq 0 ]
 then
+    echo "No internet connection."
+else
+    # ensure gpg-agent is running
+    # echo RELOADAGENT | gpg-connect-agent >> /dev/null
+    gpg-connect-agent /bye >> /dev/null
+    # get new mails
     mbsync -qq -a
+    # index new mails
     notmuch new --quiet
-    exit 0
 fi
-echo "No internet connection."
-exit 0
-

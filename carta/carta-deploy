@@ -1,16 +1,20 @@
 #!/usr/bin/env bash
 
 
+# check if account is passed as argument
 if [ "$#" -ne 1 ];
 then
   echo "Usage: carta-deploy accountname"
   exit
 fi
 
+# check internet connection
+is_connected || echo 'No connection'; exit 1
+
 # get account name
 ACCOUNT=$1
 
-# get account data
+# get account data from password-store
 PASS=$(pass email/${ACCOUNT})
 USER=$(echo "$PASS" | sed '1d' | grep -w "^[Uu]ser" | \
   sed -e "s/^[Uu]ser[ \t]*:[ \t]*//" -e "s/[ \t]*$//")

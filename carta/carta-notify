@@ -24,4 +24,8 @@ do
   OUT="$OUT<b>${auths:0:15}:</b> ${subj:0:20}\n"
 done
 
-notify-send -u normal "$TITLE" "$OUT"
+# check if there is some output
+if [[ ${OUT} != "" ]];
+then
+  notify-send -u normal "$TITLE" "$OUT"
+fi

@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+
+FILEFULL=`cat /dev/stdin`
+CACHEDIR=${HOME}/.cache/carta
+mkdir -p ${CACHEDIR}
+LOCK=merge-threads.lock
+
+if [ -f ${CACHEDIR}/${LOCK} ]; then
+  STATUS=1
+else
+  STATUS=0
+fi
+
+case ${STATUS} in
+  0)
+    echo "${FILEFULL}" > ${CACHEDIR}/${LOCK}
+    ;;
+  1)
+    REPLYFULL=`cat ${CACHEDIR}/${LOCK}`
+    REPLYNAME=`basename ${REPLYFULL}`
+    
+    FILEID=`sed -n -e 's/^Message-ID: *//p' ${FILEFULL}`
+    REPLYID=`sed -n -e 's/^Message-ID: *<//p' -e 's/>$//p' ${REPLYFULL}`
+
+    REPLYTAGS=`notmuch dump id:${REPLYID}`
+    sed -i "/^From:/a In-Reply-To: ${FILEID}" ${CACHEDIR}/${REPLYNAME}
+    mv ${REPLYFULL} ${CACHEDIR}
+    notmuch new --no-hooks
+    mv ${CACHEDIR}/${REPLYNAME} ${REPLYFULL}
+    notmuch new --no-hooks
+    notmuch tag -new ${REPLYTAGS}
+
+    rm ${CACHEDIR}/${LOCK}
+    ;;
+esac
